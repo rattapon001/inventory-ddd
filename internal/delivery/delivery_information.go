@@ -1,6 +1,10 @@
 package delivery
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type DeliveryId string
 type ProductStatus string
@@ -31,9 +35,16 @@ type DeliveryInformation struct {
 	Products       []Product
 }
 
-func New(product []Product, subplier Subplier) (DeliveryInformation, error) {
-	return DeliveryInformation{
-		ID:             DeliveryId(time.Now().Format("mmddyyhhMMss")),
+func New(product []Product, subplier Subplier) (*DeliveryInformation, error) {
+
+	ID, err := uuid.NewUUID()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &DeliveryInformation{
+		ID:             DeliveryId(ID.String()),
 		DocumentNumber: time.Now().Format("mmddyyhhMMss"),
 		Subplier:       subplier,
 		Products:       product,
