@@ -1,4 +1,4 @@
-package inventory
+package domain
 
 import (
 	"time"
@@ -70,4 +70,17 @@ func (p *Product) Deposit(lotNumber string, qty int, eta time.Time) error {
 	})
 
 	return nil
+}
+
+// Sort By ETA Ascending
+func (p *Product) SortInventoryByETA() {
+
+	for i := 0; i < len(p.Inventory); i++ {
+		for j := i + 1; j < len(p.Inventory); j++ {
+			if p.Inventory[i].Eta.After(p.Inventory[j].Eta) {
+				p.Inventory[i], p.Inventory[j] = p.Inventory[j], p.Inventory[i]
+			}
+		}
+	}
+
 }

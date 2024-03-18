@@ -1,10 +1,10 @@
-package inventory_test
+package domain_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/rattapon001/inventory-ddd/internal/inventory"
+	inventory "github.com/rattapon001/inventory-ddd/internal/inventory/domain"
 	"github.com/stretchr/testify/assert"
 )
 
