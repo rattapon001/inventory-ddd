@@ -35,3 +35,27 @@ func TestDeposit(t *testing.T) {
 	assert.Equal(100, product.Inventory[0].Qty)
 	assert.Equal(eta, product.Inventory[0].Eta)
 }
+
+func TestSortInventoryByETA(t *testing.T) {
+	assert := assert.New(t)
+
+	product, err := inventory.New("sku", "name")
+	assert.Nil(err)
+
+	eta1 := time.Now()
+	eta2 := time.Now().AddDate(0, 0, 1)
+
+	err = product.Deposit("lot-2", 100, eta2)
+	assert.Nil(err)
+
+	err = product.Deposit("lot-1", 100, eta1)
+	assert.Nil(err)
+
+	assert.Len(product.Inventory, 2)
+	assert.Equal(eta2, product.Inventory[0].Eta)
+	assert.Equal(eta1, product.Inventory[1].Eta)
+
+	product.SortInventoryByETA()
+	assert.Equal(eta1, product.Inventory[0].Eta)
+	assert.Equal(eta2, product.Inventory[1].Eta)
+}
