@@ -4,23 +4,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	errs "github.com/rattapon001/inventory-ddd/internal/delivery/errors"
 )
 
 type DeliveryId string
-type ProductStatus string
-
-const (
-	ProductStatusPending = "pending"
-	ProductStatusPass    = "pass"
-	ProductStatusReject  = "reject"
-)
-
-type Product struct {
-	Name   string
-	Sku    string
-	Qty    int16
-	Status ProductStatus
-}
 
 type Subplier struct {
 	Name string
@@ -55,16 +42,24 @@ func New(product []Product, subplier Subplier) (*DeliveryInformation, error) {
 func (d *DeliveryInformation) Pass(sku string) error {
 	for i, product := range d.Products {
 		if product.Sku == sku {
-			d.Products[i].Status = ProductStatusPass
+			err := d.Products[i].Pass()
+			if err != nil {
+				return err
+			}
+			return nil
 		}
 	}
-	return nil
+	return errs.ErrProductNotFound
 }
 
 func (d *DeliveryInformation) Reject(sku string) error {
 	for i, product := range d.Products {
 		if product.Sku == sku {
-			d.Products[i].Status = ProductStatusReject
+			err := d.Products[i].Reject()
+			if err != nil {
+				return err
+			}
+			return nil
 		}
 	}
 	return nil
