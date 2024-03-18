@@ -15,7 +15,7 @@ func TestNewReserve(t *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(reserve)
 	assert.NotEmpty(reserve.Id)
-	assert.Equal(domain.InventoryId("inventory-1"), reserve.InventoryId)
+	assert.Equal("inventory-1", reserve.LotNumber)
 	assert.Equal(100, reserve.Qty)
 	assert.NotEmpty(reserve.ReservedAt)
 	assert.Equal(domain.ReserveStatusPending, reserve.Status)

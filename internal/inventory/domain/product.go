@@ -56,3 +56,28 @@ func (p *Product) SortInventoryByETA() {
 	}
 
 }
+
+func (p *Product) ReserveInventory(lotNumber string, qty int, refNo string) error {
+
+	for i := 0; i < len(p.Inventory); i++ {
+		if p.Inventory[i].Qty >= qty {
+			err := p.Inventory[i].DeductQty(qty)
+
+			if err != nil {
+				return err
+			}
+
+			Reserve, err := NewReserve(p.Inventory[i].LotNumber, qty, refNo)
+
+			if err != nil {
+				return err
+			}
+
+			p.Reserve = append(p.Reserve, *Reserve)
+
+			return nil
+		}
+	}
+
+	return nil
+}

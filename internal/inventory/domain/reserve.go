@@ -17,15 +17,15 @@ const (
 )
 
 type Reserve struct {
-	Id          ReserveId
-	ReservedAt  time.Time
-	InventoryId InventoryId
-	Qty         int
-	RefNo       string
-	Status      ReserveStatus
+	Id         ReserveId
+	ReservedAt time.Time
+	LotNumber  string
+	Qty        int
+	RefNo      string
+	Status     ReserveStatus
 }
 
-func NewReserve(inventoryId InventoryId, qty int, refNo string) (*Reserve, error) {
+func NewReserve(LotNumber string, qty int, refNo string) (*Reserve, error) {
 	ID, err := uuid.NewUUID()
 
 	if err != nil {
@@ -33,12 +33,12 @@ func NewReserve(inventoryId InventoryId, qty int, refNo string) (*Reserve, error
 	}
 
 	return &Reserve{
-		Id:          ReserveId(ID.String()),
-		ReservedAt:  time.Now(),
-		InventoryId: inventoryId,
-		Qty:         qty,
-		RefNo:       refNo,
-		Status:      ReserveStatusPending,
+		Id:         ReserveId(ID.String()),
+		ReservedAt: time.Now(),
+		LotNumber:  LotNumber,
+		Qty:        qty,
+		RefNo:      refNo,
+		Status:     ReserveStatusPending,
 	}, nil
 }
 
