@@ -20,6 +20,7 @@ type DeliveryInformation struct {
 	Date           time.Time
 	Subplier       Subplier
 	Products       []Product
+	Events         []interface{}
 }
 
 func New(product []Product, subplier Subplier) (*DeliveryInformation, error) {
@@ -46,6 +47,7 @@ func (d *DeliveryInformation) Pass(sku string) error {
 			if err != nil {
 				return err
 			}
+			d.ProductPassedEvent(d.Products[i])
 			return nil
 		}
 	}
@@ -62,5 +64,20 @@ func (d *DeliveryInformation) Reject(sku string) error {
 			return nil
 		}
 	}
-	return nil
+	return errs.ErrProductNotFound
+}
+
+func (d *DeliveryInformation) ProductPassedEvent(product Product) {
+
+	event := map[string]interface{}{
+		"eventName": "product_passed",
+		"time":      time.Now(),
+		"payload": map[string]interface{}{
+			"Subplier": d.Subplier,
+			"Product":  product,
+			"Eta":      d.Date,
+		},
+	}
+
+	d.Events = append(d.Events, event)
 }

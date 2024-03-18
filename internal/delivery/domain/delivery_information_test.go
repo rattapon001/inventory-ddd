@@ -71,3 +71,62 @@ func TestPass_NotFound(t *testing.T) {
 	assert.NotNil(err)
 	assert.Equal(errs.ErrProductNotFound, err)
 }
+
+func TestReject(t *testing.T) {
+	assert := assert.New(t)
+
+	delivery, _ := domain.New([]domain.Product{
+		{
+			Name:   "product-1",
+			Sku:    "sku-1",
+			Qty:    100,
+			Status: domain.ProductStatusPending,
+		},
+	}, domain.Subplier{
+		Name: "subplier-1",
+		Code: "code-1",
+	})
+
+	err := delivery.Reject("sku-1")
+	assert.Nil(err)
+	assert.Equal(domain.ProductStatusReject, delivery.Products[0].Status)
+}
+
+func TestReject_NotFound(t *testing.T) {
+	assert := assert.New(t)
+
+	delivery, _ := domain.New([]domain.Product{
+		{
+			Name:   "product-1",
+			Sku:    "sku-1",
+			Qty:    100,
+			Status: domain.ProductStatusPending,
+		},
+	}, domain.Subplier{
+		Name: "subplier-1",
+		Code: "code-1",
+	})
+
+	err := delivery.Reject("sku-2")
+	assert.NotNil(err)
+	assert.Equal(errs.ErrProductNotFound, err)
+}
+
+func TestProductPassedEvent(t *testing.T) {
+	assert := assert.New(t)
+
+	delivery, _ := domain.New([]domain.Product{
+		{
+			Name:   "product-1",
+			Sku:    "sku-1",
+			Qty:    100,
+			Status: domain.ProductStatusPending,
+		},
+	}, domain.Subplier{
+		Name: "subplier-1",
+		Code: "code-1",
+	})
+
+	delivery.ProductPassedEvent(delivery.Products[0])
+	assert.Equal(1, len(delivery.Events))
+}
