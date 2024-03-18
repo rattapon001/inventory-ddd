@@ -21,7 +21,7 @@ type Product struct {
 	Id        ProductId
 	Sku       string
 	Name      string
-	Inventory Inventory
+	Inventory []Inventory
 	Reserve   Reserve
 }
 
@@ -62,12 +62,12 @@ func (p *Product) Deposit(lotNumber string, qty int, eta time.Time) error {
 		return err
 	}
 
-	p.Inventory = Inventory{
+	p.Inventory = append(p.Inventory, Inventory{
 		Id:        InventoryId(ID.String()),
 		LotNumber: lotNumber,
 		Qty:       qty,
 		Eta:       eta,
-	}
+	})
 
 	return nil
 }
