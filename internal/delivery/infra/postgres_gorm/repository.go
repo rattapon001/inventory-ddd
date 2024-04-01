@@ -9,7 +9,7 @@ type DeliveryGormRepository struct {
 	DB *gorm.DB
 }
 
-func NewDeliveryGormRepository(db *gorm.DB) *DeliveryGormRepository {
+func NewDeliveryGormRepository(db *gorm.DB) domain.DeliveryRepository {
 	return &DeliveryGormRepository{
 		DB: db,
 	}

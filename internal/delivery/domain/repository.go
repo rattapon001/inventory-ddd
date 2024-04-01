@@ -1,7 +1,7 @@
 package domain
 
-type Repository interface {
-	save(deliveryInfo *DeliveryInformation) error
-	getByID(id DeliveryId) (*DeliveryInformation, error)
-	getAll() ([]*DeliveryInformation, error)
+type DeliveryRepository interface {
+	Save(deliveryInfo *DeliveryInformation) error
+	GetByID(id DeliveryId) (*DeliveryInformation, error)
+	GetAll() ([]*DeliveryInformation, error)
 }
