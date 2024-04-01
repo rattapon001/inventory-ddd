@@ -1,0 +1,79 @@
+version: '3.5'
+
+services:
+  inventory-db:
+    container_name: inventory_db
+    image: debezium/postgres:16
+    restart: always
+    ports:
+      - "54321:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=inventory_db
+
+  zookeeper:
+    image: bitnami/zookeeper:3.7.2
+    restart: always
+    container_name: zookeeper
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: 'yes'
+    networks:
+      - default
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+
+  kafka:
+    image: bitnami/kafka:3.5.2
+    restart: always
+    container_name: kafka
+    environment:
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://192.168.2.135:9092"
+      KAFKA_ADVERTISED_PORT: 9092
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+    ports:
+      - '9092:9092'
+    networks:
+      - default
+    depends_on:
+      - zookeeper
+
+  kowl:
+    image: quay.io/cloudhut/kowl:v1.4.0
+    container_name: kowl
+    restart: always
+    hostname: kowl
+    volumes:
+      - ./kowl.yml:/etc/kowl/config.yaml
+    entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
+    ports:
+      - "8082:8080"
+    networks:
+      - default
+    depends_on:
+      - kafka
+
+  connect:
+    container_name: connect
+    image: debezium/connect:2.5
+    ports:
+      - 8083:8083
+    depends_on:
+      - kafka
+      - inventory-db
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: "1"
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+    networks:
+      - default
+
+networks:
+  default:
+    name: inventory_default
