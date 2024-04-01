@@ -30,5 +30,5 @@ func (e *Event) Scan(value interface{}) error {
 		err := json.Unmarshal(data, &e)
 		return err
 	}
-	return fmt.Errorf("failed to unmarshal subplier data")
+	return fmt.Errorf("failed to unmarshal supplier data")
 }

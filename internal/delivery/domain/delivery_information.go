@@ -12,33 +12,33 @@ import (
 
 type DeliveryId string
 
-type Subplier struct {
+type Supplier struct {
 	Name string `json:"name"`
 	Code string `json:"code"`
 }
 
-func (s Subplier) Value() (driver.Value, error) {
+func (s Supplier) Value() (driver.Value, error) {
 	return json.Marshal(s)
 }
 
-func (s *Subplier) Scan(value interface{}) error {
+func (s *Supplier) Scan(value interface{}) error {
 	if data, ok := value.([]uint8); ok {
 		err := json.Unmarshal(data, &s)
 		return err
 	}
-	return fmt.Errorf("failed to unmarshal subplier data")
+	return fmt.Errorf("failed to unmarshal supplier data")
 }
 
 type DeliveryInformation struct {
 	ID             DeliveryId `gorm:"primaryKey;type:uuid"`
 	DocumentNumber string     `gorm:"unique"`
 	Date           time.Time  `gorm:"default:CURRENT_TIMESTAMP"`
-	Subplier       Subplier   `gorm:"type:jsonb"`
+	Supplier       Supplier   `gorm:"type:jsonb"`
 	Products       []Product  `gorm:"type:foreignKey:DeliveryInformationID"`
 	Events         []Event    `gorm:"type:jsonb"`
 }
 
-func New(product []Product, subplier Subplier) (*DeliveryInformation, error) {
+func New(product []Product, supplier Supplier) (*DeliveryInformation, error) {
 
 	ID, err := uuid.NewUUID()
 
@@ -49,7 +49,7 @@ func New(product []Product, subplier Subplier) (*DeliveryInformation, error) {
 	deliveryInformation := &DeliveryInformation{
 		ID:             DeliveryId(ID.String()),
 		DocumentNumber: time.Now().Format("mmddyyhhMMss"),
-		Subplier:       subplier,
+		Supplier:       supplier,
 		Products:       product,
 		Date:           time.Now(),
 	}
@@ -92,7 +92,7 @@ func (d *DeliveryInformation) ProductPassedEvent(product Product) {
 		EventName: string(EventNameProductPassed),
 		Time:      time.Now(),
 		Payload: map[string]interface{}{
-			"Subplier": d.Subplier,
+			"Supplier": d.Supplier,
 			"Product":  product,
 			"Eta":      d.Date,
 		},
@@ -107,7 +107,7 @@ func (d *DeliveryInformation) ProductRejectedEvent(product Product) {
 		EventName: string(EventNameProductRejected),
 		Time:      time.Now(),
 		Payload: map[string]interface{}{
-			"Subplier": d.Subplier,
+			"Supplier": d.Supplier,
 			"Product":  product,
 			"Eta":      d.Date,
 		},

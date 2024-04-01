@@ -18,15 +18,15 @@ func TestNew(t *testing.T) {
 			Qty:    100,
 			Status: domain.ProductStatusPending,
 		},
-	}, domain.Subplier{
-		Name: "subplier-1",
+	}, domain.Supplier{
+		Name: "supplier-1",
 		Code: "code-1",
 	})
 
 	assert.Nil(err)
 	assert.NotNil(delivery)
-	assert.Equal("subplier-1", delivery.Subplier.Name)
-	assert.Equal("code-1", delivery.Subplier.Code)
+	assert.Equal("supplier-1", delivery.Supplier.Name)
+	assert.Equal("code-1", delivery.Supplier.Code)
 	assert.Equal(1, len(delivery.Products))
 	assert.Equal("product-1", delivery.Products[0].Name)
 	assert.Equal("sku-1", delivery.Products[0].Sku)
@@ -43,8 +43,8 @@ func TestPass(t *testing.T) {
 			Qty:    100,
 			Status: domain.ProductStatusPending,
 		},
-	}, domain.Subplier{
-		Name: "subplier-1",
+	}, domain.Supplier{
+		Name: "supplier-1",
 		Code: "code-1",
 	})
 
@@ -63,8 +63,8 @@ func TestPass_NotFound(t *testing.T) {
 			Qty:    100,
 			Status: domain.ProductStatusPending,
 		},
-	}, domain.Subplier{
-		Name: "subplier-1",
+	}, domain.Supplier{
+		Name: "supplier-1",
 		Code: "code-1",
 	})
 
@@ -83,8 +83,8 @@ func TestReject(t *testing.T) {
 			Qty:    100,
 			Status: domain.ProductStatusPending,
 		},
-	}, domain.Subplier{
-		Name: "subplier-1",
+	}, domain.Supplier{
+		Name: "supplier-1",
 		Code: "code-1",
 	})
 
@@ -103,8 +103,8 @@ func TestReject_NotFound(t *testing.T) {
 			Qty:    100,
 			Status: domain.ProductStatusPending,
 		},
-	}, domain.Subplier{
-		Name: "subplier-1",
+	}, domain.Supplier{
+		Name: "supplier-1",
 		Code: "code-1",
 	})
 
@@ -123,8 +123,8 @@ func TestProductPassedEvent(t *testing.T) {
 			Qty:    100,
 			Status: domain.ProductStatusPending,
 		},
-	}, domain.Subplier{
-		Name: "subplier-1",
+	}, domain.Supplier{
+		Name: "supplier-1",
 		Code: "code-1",
 	})
 
@@ -142,8 +142,8 @@ func TestProductRejectedEvent(t *testing.T) {
 			Qty:    100,
 			Status: domain.ProductStatusPending,
 		},
-	}, domain.Subplier{
-		Name: "subplier-1",
+	}, domain.Supplier{
+		Name: "supplier-1",
 		Code: "code-1",
 	})
 
