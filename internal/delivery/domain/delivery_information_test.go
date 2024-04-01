@@ -30,6 +30,7 @@ func TestNew(t *testing.T) {
 	assert.Equal(1, len(delivery.Products))
 	assert.Equal("product-1", delivery.Products[0].Name)
 	assert.Equal("sku-1", delivery.Products[0].Sku)
+	assert.Equal(1, len(delivery.Events))
 }
 
 func TestPass(t *testing.T) {
@@ -128,5 +129,24 @@ func TestProductPassedEvent(t *testing.T) {
 	})
 
 	delivery.ProductPassedEvent(delivery.Products[0])
-	assert.Equal(1, len(delivery.Events))
+	assert.Equal(2, len(delivery.Events))
+}
+
+func TestProductRejectedEvent(t *testing.T) {
+	assert := assert.New(t)
+
+	delivery, _ := domain.New([]domain.Product{
+		{
+			Name:   "product-1",
+			Sku:    "sku-1",
+			Qty:    100,
+			Status: domain.ProductStatusPending,
+		},
+	}, domain.Subplier{
+		Name: "subplier-1",
+		Code: "code-1",
+	})
+
+	delivery.ProductRejectedEvent(delivery.Products[0])
+	assert.Equal(2, len(delivery.Events))
 }

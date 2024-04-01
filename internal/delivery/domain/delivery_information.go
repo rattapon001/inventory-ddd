@@ -20,7 +20,7 @@ type DeliveryInformation struct {
 	Date           time.Time
 	Subplier       Subplier
 	Products       []Product
-	Events         []interface{}
+	Events         []Event
 }
 
 func New(product []Product, subplier Subplier) (*DeliveryInformation, error) {
@@ -31,13 +31,17 @@ func New(product []Product, subplier Subplier) (*DeliveryInformation, error) {
 		return nil, err
 	}
 
-	return &DeliveryInformation{
+	deliveryInformation := &DeliveryInformation{
 		ID:             DeliveryId(ID.String()),
 		DocumentNumber: time.Now().Format("mmddyyhhMMss"),
 		Subplier:       subplier,
 		Products:       product,
 		Date:           time.Now(),
-	}, nil
+	}
+
+	deliveryInformation.DeliveryInformationCreatedEvent()
+
+	return deliveryInformation, nil
 }
 
 func (d *DeliveryInformation) Pass(sku string) error {
@@ -69,13 +73,43 @@ func (d *DeliveryInformation) Reject(sku string) error {
 
 func (d *DeliveryInformation) ProductPassedEvent(product Product) {
 
-	event := map[string]interface{}{
-		"eventName": "product_passed",
-		"time":      time.Now(),
-		"payload": map[string]interface{}{
+	event := Event{
+		EventName: string(EventNameProductPassed),
+		Time:      time.Now(),
+		Payload: map[string]interface{}{
 			"Subplier": d.Subplier,
 			"Product":  product,
 			"Eta":      d.Date,
+		},
+	}
+
+	d.Events = append(d.Events, event)
+}
+
+func (d *DeliveryInformation) ProductRejectedEvent(product Product) {
+
+	event := Event{
+		EventName: string(EventNameProductRejected),
+		Time:      time.Now(),
+		Payload: map[string]interface{}{
+			"Subplier": d.Subplier,
+			"Product":  product,
+			"Eta":      d.Date,
+		},
+	}
+
+	d.Events = append(d.Events, event)
+}
+
+func (d *DeliveryInformation) DeliveryInformationCreatedEvent() {
+
+	event := Event{
+		EventName: string(EventNameDeliveryCreated),
+		Time:      time.Now(),
+		Payload: map[string]interface{}{
+			"Id":             d.ID,
+			"DocumentNumber": d.DocumentNumber,
+			"Date":           d.Date,
 		},
 	}
 
