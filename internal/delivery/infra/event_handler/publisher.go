@@ -2,16 +2,15 @@ package eventhandler
 
 import (
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type Publisher struct {
 	repo OutboxRepository
 }
 
-func NewPublisher(db *gorm.DB) *Publisher {
+func NewPublisher(repository OutboxRepository) *Publisher {
 	return &Publisher{
-		repo: NewPostgresOutboxRepository(db),
+		repo: repository,
 	}
 }
 

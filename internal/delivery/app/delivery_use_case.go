@@ -1,6 +1,9 @@
 package app
 
-import "github.com/rattapon001/inventory-ddd/internal/delivery/domain"
+import (
+	eventhandler "github.com/rattapon001/inventory-ddd/internal/delivery/app/event_handler"
+	"github.com/rattapon001/inventory-ddd/internal/delivery/domain"
+)
 
 type DeliveryUseCase interface {
 	Create(supplier domain.Supplier, products []domain.Product) (*domain.DeliveryInformation, error)
@@ -9,11 +12,13 @@ type DeliveryUseCase interface {
 }
 
 type deliveryUseCase struct {
-	repo domain.DeliveryRepository
+	repo      domain.DeliveryRepository
+	publisher eventhandler.EventHandler
 }
 
-func NewDeliveryUseCase(repo domain.DeliveryRepository) DeliveryUseCase {
+func NewDeliveryUseCase(repo domain.DeliveryRepository, publisher eventhandler.EventHandler) DeliveryUseCase {
 	return &deliveryUseCase{
-		repo: repo,
+		repo:      repo,
+		publisher: publisher,
 	}
 }
