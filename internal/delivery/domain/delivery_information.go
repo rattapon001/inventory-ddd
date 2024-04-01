@@ -1,6 +1,9 @@
 package domain
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -10,17 +13,29 @@ import (
 type DeliveryId string
 
 type Subplier struct {
-	Name string
-	Code string
+	Name string `json:"name"`
+	Code string `json:"code"`
+}
+
+func (s Subplier) Value() (driver.Value, error) {
+	return json.Marshal(s)
+}
+
+func (s *Subplier) Scan(value interface{}) error {
+	if data, ok := value.([]uint8); ok {
+		err := json.Unmarshal(data, &s)
+		return err
+	}
+	return fmt.Errorf("failed to unmarshal subplier data")
 }
 
 type DeliveryInformation struct {
-	ID             DeliveryId
-	DocumentNumber string
-	Date           time.Time
-	Subplier       Subplier
-	Products       []Product
-	Events         []Event
+	ID             DeliveryId `gorm:"primaryKey;type:uuid"`
+	DocumentNumber string     `gorm:"unique"`
+	Date           time.Time  `gorm:"default:CURRENT_TIMESTAMP"`
+	Subplier       Subplier   `gorm:"type:jsonb"`
+	Products       []Product  `gorm:"type:foreignKey:DeliveryInformationID"`
+	Events         []Event    `gorm:"type:jsonb"`
 }
 
 func New(product []Product, subplier Subplier) (*DeliveryInformation, error) {
